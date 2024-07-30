@@ -44,6 +44,47 @@ const getProxy = async () => {
   }
 };
 
+const acceptConsent = async (page) => {
+  try {
+    await page.waitForSelector(
+      '[aria-label="Real Estate How To asks for your consent to use your personal data to: "]',
+      { timeout: 5000 }
+    );
+    const consentButton = await page.$x("//button[contains(., 'Consent')]");
+
+    if (consentButton.length > 0) {
+      await consentButton[0].click();
+      console.log("Consent button clicked");
+    } else {
+      console.log("Consent button not found");
+    }
+  } catch (err) {
+    console.log(
+      "No consent popup found or error clicking the consent button:",
+      err
+    );
+  }
+};
+
+const acceptCookies = async (page) => {
+  const cookiePopupSelector = '[aria-modal="true"]';
+  const buttonSelector = "button";
+
+  try {
+    await page.waitForSelector(cookiePopupSelector, { timeout: 5000 });
+    const buttons = await page.$$(cookiePopupSelector + " " + buttonSelector);
+    for (const button of buttons) {
+      const buttonText = await page.evaluate(
+        (button) => button.textContent,
+        button
+      );
+      await button.click();
+    }
+  } catch (err) {
+    console.log("No cookie popup found or no acceptable button to click.");
+  }
+};
+
 const userAgents = [
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.1 Safari/605.1.15",
@@ -121,4 +162,6 @@ module.exports = {
   simulateMouseMovement,
   shuffleArray,
   getValueWithErrorMargin,
+  acceptCookies,
+  acceptConsent
 };
