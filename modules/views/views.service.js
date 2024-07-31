@@ -100,7 +100,9 @@ const runBot = async (proxy, num = null) => {
   );
   const userAgent = userAgents[getRandomInt(0, userAgents.length - 1)];
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
+    executablePath: "/usr/bin/chromium",
+    ignoreDefaultArgs: ["--disable-extensions"],
     args: [
       `--proxy-server=http://${proxy.address}:${proxy.port}`,
       `--user-agent=${userAgent}`,
