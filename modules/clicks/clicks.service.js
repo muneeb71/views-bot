@@ -1,4 +1,3 @@
-
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const RecaptchaPlugin = require("puppeteer-extra-plugin-recaptcha");
@@ -14,25 +13,14 @@ const {
 } = require("../../utils/helper");
 
 const targetList = [
-  "Insurance",
-  "Loans",
-  "Mortgage",
-  "Attorney",
-  "Credit",
-  "Lawyer",
-  "Donate",
-  "Degree",
-  "Hosting",
-  "Claim",
-  "Conference Call",
-  "Trading",
-  "Software",
-  "Recovery",
-  "Transfer",
-  "Gas/Electricity",
-  "Classes",
-  "Rehab",
-  "Treatment",
+  "best life insurance companies sproutt",
+  "term life insurance",
+  "gerber life insurance",
+  "best term life insurance sproutt",
+  "whole life insurance",
+  "new york life insurance",
+  "tricare for life",
+  "american general life insurance",
 ];
 
 const clickAds = async (page) => {
