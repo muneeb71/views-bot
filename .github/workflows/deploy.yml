@@ -1,4 +1,4 @@
-name: Deploy to GCP
+name: Deploy to Google Cloud
 
 on:
   push:
@@ -6,35 +6,36 @@ on:
       - main
 
 jobs:
-  build-and-deploy: 
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v1
-      with:
-        version: 'latest'
-        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
+      - name: Set up Google Cloud SDK
+        run: |
+          curl -o google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-372.0.0-linux-x86_64.tar.gz
+          tar -xf google-cloud-sdk.tar.gz
+          ./google-cloud-sdk/install.sh --quiet
+          echo "${{ secrets.GCLOUD_AUTH }}" > /tmp/gcloud.json
+          ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=/tmp/gcloud.json
+          ./google-cloud-sdk/bin/gcloud config set project cdtest-406103
 
-    - name: Configure Docker to use gcloud as a credential helper
-      run: gcloud auth configure-docker
+      - name: Build Docker image
+        run: |
+          docker build -t nodejs-sample-image .
 
-    - name: Build and push Docker image
-      run: |
-        echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}"
-        echo "GCP_REPO_NAME=${{ secrets.GCP_REPO_NAME }}"
-        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REPO_NAME }}:$GITHUB_SHA .
-        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REPO_NAME }}:$GITHUB_SHA
+      - name: Configure Docker and push image
+        run: |
+          ./google-cloud-sdk/bin/gcloud auth configure-docker
+          docker tag nodejs-sample-image gcr.io/cdtest-406103/nodejs-sample-image
+          docker push gcr.io/cdtest-406103/nodejs-sample-image
 
-    - name: Deploy to Cloud Run
-      run: |
-        gcloud run deploy ${{ secrets.GCP_SERVICE_NAME }} \
-          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REPO_NAME }}:$GITHUB_SHA \
-          --region ${{ secrets.GCP_REGION }} \
-          --platform managed \
-          --allow-unauthenticated
- 
+      - name: Deploy to Google Cloud Run
+        run: |
+          ./google-cloud-sdk/bin/gcloud run deploy nodejs-sample-service \
+            --image=gcr.io/cdtest-406103/nodejs-sample-image \
+            --platform=managed \
+            --region=us-central1 \
+            --allow-unauthenticated 
