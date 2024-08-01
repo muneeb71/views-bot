@@ -21,10 +21,12 @@ jobs:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Configure Docker to use gcloud as a credential helper
-      run: gcloud auth configure-docker 
- 
+      run: gcloud auth configure-docker
+
     - name: Build and push Docker image
       run: |
+        echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}"
+        echo "GCP_REPO_NAME=${{ secrets.GCP_REPO_NAME }}"
         docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REPO_NAME }}:$GITHUB_SHA .
         docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REPO_NAME }}:$GITHUB_SHA
 
