@@ -38,4 +38,4 @@ jobs:
             --image=gcr.io/cdtest-406103/nodejs-sample-image \
             --platform=managed \
             --region=us-central1 \
-            --allow-unauthenticated  
+            --allow-unauthenticated   
