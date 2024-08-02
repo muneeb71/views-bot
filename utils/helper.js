@@ -150,6 +150,27 @@ const getValueWithErrorMargin = (views) => {
   return Math.floor(Math.random() * (maxViews - minViews + 1)) + minViews;
 };
 
+const NODE_ENV = "development";
+
+const getBrowserConfig = (proxy, userAgent) =>
+  NODE_ENV == "development"
+    ? {
+        headless: false,
+        args: [
+          `--proxy-server=http://${proxy.address}:${proxy.port}`,
+          `--user-agent=${userAgent}`,
+        ],
+      }
+    : {
+        headless: true,
+        executablePath: "/usr/bin/chromium",
+        ignoreDefaultArgs: ["--disable-extensions"],
+        args: [
+          `--proxy-server=http://${proxy.address}:${proxy.port}`,
+          `--user-agent=${userAgent}`,
+        ],
+      };
+
 module.exports = {
   getRandomInt,
   readProxiesFromFile,
@@ -163,5 +184,7 @@ module.exports = {
   shuffleArray,
   getValueWithErrorMargin,
   acceptCookies,
-  acceptConsent
+  acceptConsent,
+  NODE_ENV,
+  getBrowserConfig,
 };

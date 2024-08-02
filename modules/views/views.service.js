@@ -9,6 +9,8 @@ const {
   userAgents,
   getProxy,
   getRandomInt,
+  NODE_ENV,
+  getBrowserConfig,
 } = require("../../utils/helper");
 
 const ttpMediaKeyword = "https://rehowto.com/";
@@ -99,15 +101,8 @@ const runBot = async (proxy, num = null) => {
     })
   );
   const userAgent = userAgents[getRandomInt(0, userAgents.length - 1)];
-  const browser = await puppeteer.launch({
-    headless: true,
-    executablePath: "/usr/bin/chromium",
-    ignoreDefaultArgs: ["--disable-extensions"],
-    args: [
-      `--proxy-server=http://${proxy.address}:${proxy.port}`,
-      `--user-agent=${userAgent}`,
-    ],
-  });
+  const config = getBrowserConfig(proxy, userAgent);
+  const browser = await puppeteer.launch(config);
 
   try {
     while (true) {

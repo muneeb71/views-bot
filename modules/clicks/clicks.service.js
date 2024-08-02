@@ -10,6 +10,7 @@ const {
   smoothScroll,
   simulateMouseMovement,
   acceptCookies,
+  getBrowserConfig,
 } = require("../../utils/helper");
 
 const targetList = [
@@ -191,15 +192,8 @@ const runBot = async (proxy, websiteUrl) => {
     })
   );
   const userAgent = userAgents[getRandomInt(0, userAgents.length - 1)];
-  const browser = await puppeteer.launch({
-    headless: true,
-    executablePath: "/usr/bin/chromium",
-    ignoreDefaultArgs: ["--disable-extensions"],
-    args: [
-      `--proxy-server=http://${proxy.address}:${proxy.port}`,
-      `--user-agent=${userAgent}`,
-    ],
-  });
+  const config = getBrowserConfig(proxy, userAgent);
+  const browser = await puppeteer.launch(config);
 
   try {
     await runBotForWebsite(browser, websiteUrl);
