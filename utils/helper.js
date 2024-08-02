@@ -150,7 +150,7 @@ const getValueWithErrorMargin = (views) => {
   return Math.floor(Math.random() * (maxViews - minViews + 1)) + minViews;
 };
 
-const NODE_ENV = "development";
+const NODE_ENV = "production";
 
 const getBrowserConfig = (proxy, userAgent) =>
   NODE_ENV == "development"
