@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const axios = require("axios");
 
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -24,20 +25,32 @@ const readProxiesFromFile = async (filePath) => {
   }
 };
 
-const getRandomProxy = async (filePath) => {
-  const proxies = await readProxiesFromFile(filePath);
-  if (proxies.length === 0) {
-    throw new Error("No proxies available");
-  }
+const getRandomProxy = async (proxies) => {
+  // const proxies = await readProxiesFromFile(filePath);
+  // if (proxies.length === 0) {
+  //   throw new Error("No proxies available");
+  // }
 
   const randomIndex = getRandomInt(0, proxies.length - 1);
   return proxies[randomIndex];
 };
 
 const getProxy = async () => {
-  const filePath = path.join(__dirname, "./proxiesList.txt");
+  // const filePath = path.join(__dirname, "./proxiesList.txt");
+  const proxies = [];
   try {
-    const randomProxy = await getRandomProxy(filePath);
+    for (let i = 1; i <= 10; i++) {
+      const response = await axios.get(
+        `https://proxy.webshare.io/api/v2/proxy/list/?mode=direct&page=${i}&page_size=1000`,
+        {
+          headers: {
+            Authorization: "Token r2phwi5l32813uku771wirx4hkrolvd9kmd149h2",
+          },
+        }
+      );
+      proxies.push(...response.data.results);
+    }
+    const randomProxy = await getRandomProxy(proxies);
     return randomProxy;
   } catch (err) {
     console.error(err);
@@ -150,14 +163,14 @@ const getValueWithErrorMargin = (views) => {
   return Math.floor(Math.random() * (maxViews - minViews + 1)) + minViews;
 };
 
-const NODE_ENV = "production";
+const NODE_ENV = "development";
 
 const getBrowserConfig = (proxy, userAgent) =>
   NODE_ENV == "development"
     ? {
         headless: false,
         args: [
-          `--proxy-server=http://${proxy.address}:${proxy.port}`,
+          `--proxy-server=http://${proxy.proxy_address}:${proxy.port}`,
           `--user-agent=${userAgent}`,
         ],
       }
@@ -166,7 +179,7 @@ const getBrowserConfig = (proxy, userAgent) =>
         executablePath: "/usr/bin/chromium",
         ignoreDefaultArgs: ["--disable-extensions"],
         args: [
-          `--proxy-server=http://${proxy.address}:${proxy.port}`,
+          `--proxy-server=http://${proxy.proxy_address}:${proxy.port}`,
           `--user-agent=${userAgent}`,
         ],
       };

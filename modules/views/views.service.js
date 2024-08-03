@@ -9,7 +9,6 @@ const {
   userAgents,
   getProxy,
   getRandomInt,
-  NODE_ENV,
   getBrowserConfig,
 } = require("../../utils/helper");
 
@@ -122,7 +121,7 @@ const runBotWithRetries = async (botIndex, totalAttempts) => {
   for (let attempt = 1; attempt <= totalAttempts; attempt++) {
     const _proxy = await getProxy();
     console.log(
-      `Bot ${botIndex}: Current Proxy Is: ${_proxy.address}:${_proxy.port}`
+      `Bot ${botIndex}: Current Proxy Is: ${_proxy.proxy_address}:${_proxy.port}`
     );
     try {
       await runBot(_proxy, attempt);
@@ -130,7 +129,7 @@ const runBotWithRetries = async (botIndex, totalAttempts) => {
     } catch (err) {
       console.log(`Bot ${botIndex}: ${err}`);
       console.log(
-        `Bot ${botIndex}: Attempt ${attempt} failed for proxy ${_proxy.address}:${_proxy.port}`
+        `Bot ${botIndex}: Attempt ${attempt} failed for proxy ${_proxy.proxy_address}:${_proxy.port}`
       );
       attempt--;
     }
