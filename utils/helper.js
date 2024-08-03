@@ -2,6 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
 
+let cachedProxies = null;
+
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -35,8 +37,7 @@ const getRandomProxy = async (proxies) => {
   return proxies[randomIndex];
 };
 
-const getProxy = async () => {
-  // const filePath = path.join(__dirname, "./proxiesList.txt");
+const fetchProxies = async () => {
   const proxies = [];
   try {
     for (let i = 1; i <= 10; i++) {
@@ -50,11 +51,17 @@ const getProxy = async () => {
       );
       proxies.push(...response.data.results);
     }
-    const randomProxy = await getRandomProxy(proxies);
-    return randomProxy;
+    cachedProxies = proxies;
   } catch (err) {
     console.error(err);
   }
+};
+
+const getProxy = async () => {
+  if (!cachedProxies) {
+    await fetchProxies();
+  }
+  return getRandomProxy(cachedProxies);
 };
 
 const acceptConsent = async (page) => {
