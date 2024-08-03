@@ -2,7 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
 
-let cachedProxies = null;
+let cachedProxies = [];
+let currentPage = 1;
 
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -27,41 +28,53 @@ const readProxiesFromFile = async (filePath) => {
   }
 };
 
-const getRandomProxy = async (proxies) => {
-  // const proxies = await readProxiesFromFile(filePath);
-  // if (proxies.length === 0) {
-  //   throw new Error("No proxies available");
-  // }
+// const getRandomProxy = async (proxies) => {
+// const proxies = await readProxiesFromFile(filePath);
+// if (proxies.length === 0) {
+//   throw new Error("No proxies available");
+// }
 
+//   const randomIndex = getRandomInt(0, proxies.length - 1);
+//   return proxies[randomIndex];
+// };
+const getRandomProxy = (proxies) => {
   const randomIndex = getRandomInt(0, proxies.length - 1);
   return proxies[randomIndex];
 };
 
-const fetchProxies = async () => {
-  const proxies = [];
+const fetchProxies = async (page) => {
   try {
-    for (let i = 1; i <= 10; i++) {
-      const response = await axios.get(
-        `https://proxy.webshare.io/api/v2/proxy/list/?mode=direct&page=${i}&page_size=1000`,
-        {
-          headers: {
-            Authorization: "Token r2phwi5l32813uku771wirx4hkrolvd9kmd149h2",
-          },
-        }
-      );
-      proxies.push(...response.data.results);
-    }
-    cachedProxies = proxies;
+    const response = await axios.get(
+      `https://proxy.webshare.io/api/v2/proxy/list/?mode=direct&page=${page}&page_size=1000`,
+      {
+        headers: {
+          Authorization: "Token r2phwi5l32813uku771wirx4hkrolvd9kmd149h2",
+        },
+      }
+    );
+    return response.data.results;
   } catch (err) {
     console.error(err);
+    return [];
   }
 };
 
 const getProxy = async () => {
-  if (!cachedProxies) {
-    await fetchProxies();
+  if (cachedProxies.length === 0) {
+    cachedProxies = await fetchProxies(currentPage);
+    if (cachedProxies.length === 0) {
+      throw new Error("No proxies available");
+    }
   }
-  return getRandomProxy(cachedProxies);
+
+  const randomProxy = getRandomProxy(cachedProxies);
+  cachedProxies = cachedProxies.filter((proxy) => proxy !== randomProxy);
+
+  if (cachedProxies.length === 0) {
+    currentPage += 1;
+  }
+
+  return randomProxy;
 };
 
 const acceptConsent = async (page) => {
