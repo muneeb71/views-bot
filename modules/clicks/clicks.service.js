@@ -213,7 +213,7 @@ const runBotWithRetries = async (botIndex, targetClicks) => {
   while (successfulClicks < targetClicks) {
     const _proxy = await getProxy();
     console.log(
-      `Bot ${botIndex}: Current Proxy Is: ${_proxy.address}:${_proxy.port}`
+      `Bot ${botIndex}: Current Proxy Is: ${_proxy.proxy_address}:${_proxy.port}`
     );
 
     try {
@@ -223,7 +223,7 @@ const runBotWithRetries = async (botIndex, targetClicks) => {
     } catch (err) {
       console.log(`Bot ${botIndex}: ${err}`);
       console.log(
-        `Bot ${botIndex}: Attempt failed for proxy ${_proxy.address}:${_proxy.port}`
+        `Bot ${botIndex}: Attempt failed for proxy ${_proxy.proxy_address}:${_proxy.port}`
       );
     }
   }

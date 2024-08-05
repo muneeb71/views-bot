@@ -120,6 +120,8 @@ const runBot = async (proxy, num = null) => {
 const runBotWithRetries = async (botIndex, totalAttempts) => {
   for (let attempt = 1; attempt <= totalAttempts; attempt++) {
     const _proxy = await getProxy();
+    console.log(_proxy);
+    return;
     console.log(
       `Bot ${botIndex}: Current Proxy Is: ${_proxy.proxy_address}:${_proxy.port}`
     );

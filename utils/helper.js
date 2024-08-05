@@ -183,7 +183,7 @@ const getValueWithErrorMargin = (views) => {
   return Math.floor(Math.random() * (maxViews - minViews + 1)) + minViews;
 };
 
-const NODE_ENV = "development";
+const NODE_ENV = "production";
 
 const getBrowserConfig = (proxy, userAgent) =>
   NODE_ENV == "development"
@@ -196,7 +196,7 @@ const getBrowserConfig = (proxy, userAgent) =>
       }
     : {
         headless: true,
-        executablePath: "/usr/bin/chromium",
+        executablePath: "/usr/bin/chromium-browser",
         ignoreDefaultArgs: ["--disable-extensions"],
         args: [
           `--proxy-server=http://${proxy.proxy_address}:${proxy.port}`,
